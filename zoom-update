@@ -165,6 +165,6 @@ function build_repo()
 #purge # use to reset on every start for development
 
 init
-$ZOOM_GPG_VERIFY || get_pubkey
+$ZOOM_GPG_VERIFY && get_pubkey
 update_latest_zoom_version
 download_latest_zoom && build_repo
