@@ -11,6 +11,7 @@ ZOOM_CACHE="${ZOOM_CACHE:-${HOME}/zoom}"
 
 ZOOM_REPO="${ZOOM_CACHE}/repo"
 ZOOM_GPG_HOME="${ZOOM_CACHE}/.gnupg"
+ZOOM_GPG_VERIFY=true
 VERSION_FILE="${ZOOM_CACHE}/zoom_deb.version"
 
 # s. https://zoom.us/download?os=linux
@@ -127,9 +128,16 @@ function download_latest_zoom()
     echo -n "Downloading... "
     wget --quiet -O "${TARGET_FILE}" "${ZOOM_CLIENT_URL}"
     echo "DONE"
-    if ! gpg --quiet --homedir "${ZOOM_GPG_HOME}" --trust-model always --verify "${TARGET_FILE}"; then
-      echo "GPG key check failed for ${TARGET_FILE}"
-      exit 2
+
+    if [ "${ZOOM_GPG_VERIFY}" = true ]; then
+      if gpg --quiet --homedir "${ZOOM_GPG_HOME}" --trust-model always --verify "${TARGET_FILE}"; then
+        $QUIET || echo "GPG key check successful for ${TARGET_FILE}"
+      else
+        echo "GPG key check failed for ${TARGET_FILE}"
+        exit 2
+      fi
+    else
+      $QUIET || echo "GPG key check was SKIPPED (see /etc/default/zoom-update)."
     fi
 
   fi
@@ -156,6 +164,6 @@ function build_repo()
 #purge # use to reset on every start for development
 
 init
-get_pubkey
+$ZOOM_GPG_VERIFY || get_pubkey
 update_latest_zoom_version
 download_latest_zoom && build_repo
