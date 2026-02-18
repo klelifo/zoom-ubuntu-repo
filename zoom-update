@@ -4,16 +4,14 @@ if [ "$UID" = "0" ]; then
   echo "WARNING: Running as root is not recommended!"
 fi
 
-#
-# CONFIGURATION DEFAULTS
-#
+[ -f /etc/default/zoom-update ] && . /etc/default/zoom-update
 
 # Set base dir
-ZOOM_CACHE="${HOME}/zoom"
+ZOOM_CACHE="${ZOOM_CACHE:-${HOME}/zoom}"
 
 ZOOM_REPO="${ZOOM_CACHE}/repo"
 ZOOM_GPG_HOME="${ZOOM_CACHE}/.gnupg"
-ZOOM_GPG_VERIFY=true
+ZOOM_GPG_VERIFY=${ZOOM_GPG_VERIFY:-true}
 VERSION_FILE="${ZOOM_CACHE}/zoom_deb.version"
 
 # s. https://zoom.us/download?os=linux
@@ -22,11 +20,6 @@ ZOOM_CLIENT_URL="https://zoom.us/client/latest/zoom_amd64.deb"
 #ZOOM_PUBKEY_URL="https://zoom.us/linux/download/pubkey?version=6-3-10"
 #ZOOM_PUBKEY_URL="https://eu02web.zoom.us/linux/download/pubkey?version=6-7-5"
 ZOOM_PUBKEY_URL="https://zoom.us/linux/download/pubkey"
-
-#
-# EXTERNAL OVERRIDES
-#
-[ -f /etc/default/zoom-update ] && . /etc/default/zoom-update
 
 # handle output verbosity
 QUIET=false
