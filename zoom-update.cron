@@ -20,10 +20,10 @@ ZOOM_CLIENT_URL="https://zoom.us/client/latest/zoom_amd64.deb"
 #ZOOM_PUBKEY_URL="https://eu02web.zoom.us/linux/download/pubkey?version=6-7-5"
 ZOOM_PUBKEY_URL="https://zoom.us/linux/download/pubkey"
 
-QUIET=true
-#QUIET=false
-
-[ "$1" = "-v" ] && QUIET=false
+# handle output verbosity
+QUIET=false
+[ "$1" = "--cron" ] && QUIET=true
+#echo "QUIET=${QUIET}"; exit
 
 ########################################################################################################################
 # FUNCTIONS
