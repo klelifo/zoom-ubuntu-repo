@@ -32,6 +32,7 @@ ZOOM_PUBKEY_URL="https://zoom.us/linux/download/pubkey"
 QUIET=false
 [ "$1" = "--cron" ] && QUIET=true
 #echo "QUIET=${QUIET}"; exit
+$QUIET || echo "ZOOM_GPG_VERIFY=${ZOOM_GPG_VERIFY}"
 
 ########################################################################################################################
 # FUNCTIONS
