@@ -16,10 +16,13 @@ VERSION_FILE="${ZOOM_CACHE}/zoom_deb.version"
 # s. https://zoom.us/download?os=linux
 ZOOM_CLIENT_URL="https://zoom.us/client/latest/zoom_amd64.deb"
 #ZOOM_PUBKEY_URL="https://zoom.us/linux/download/pubkey?version=5-12-6"
-ZOOM_PUBKEY_URL="https://zoom.us/linux/download/pubkey?version=6-3-10"
+#ZOOM_PUBKEY_URL="https://zoom.us/linux/download/pubkey?version=6-3-10"
+ZOOM_PUBKEY_URL="https://eu02web.zoom.us/linux/download/pubkey?version=6-7-5"
 
 QUIET=true
 #QUIET=false
+
+[ "$1" = "-v" ] && QUIET=false
 
 ########################################################################################################################
 # FUNCTIONS
@@ -103,10 +106,18 @@ function download_latest_zoom()
 {
   $QUIET || echo -n "Checking for downloads... "
   LATEST_ZOOM_VER=$(tail -n 1 "$VERSION_FILE")
-  TARGET_FILE="${ZOOM_REPO}/zoom_${LATEST_ZOOM_VER}_amd64.deb"
+  FILENAME="zoom_${LATEST_ZOOM_VER}_amd64.deb"
+  TARGET_FILE="${ZOOM_REPO}/${FILENAME}"
+  $QUIET || echo "Checking Zoom package file (${TARGET_FILE})"
   if [ -f "${TARGET_FILE}" ]; then
-    $QUIET || echo "Already up-to-date (${TARGET_FILE})"
-    exit 1 # indicates no error - but also nothing was downloaded
+    $QUIET || echo "Zoom package file up-to-date (${TARGET_FILE})"
+    if [ -f "${ZOOM_REPO}/Release" ] && grep --silent "${FILENAME}" "${ZOOM_REPO}/Release"; then
+      $QUIET || echo "Zoom repo up-to-date (${ZOOM_REPO})"
+      exit 1 # indicates no error - but also nothing was downloaded and repo does not need to be updated
+    else
+      $QUIET || echo "Zoom repo needs update (${ZOOM_REPO})"
+      exit 0 # already downloaded but repo needs update
+    fi
   else
     echo "Found new version (${LATEST_ZOOM_VER})."
     echo -n "Downloading... "
