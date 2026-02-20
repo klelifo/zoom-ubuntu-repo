@@ -147,11 +147,13 @@ function download_latest_zoom()
 function build_repo()
 {
   echo "Updating repo... "
+  pushd "${ZOOM_REPO}"
   if [ -f "${ZOOM_CACHE}/override" ]; then
-    dpkg-scanpackages --multiversion "${ZOOM_REPO}/" "${ZOOM_CACHE}/override" > "${ZOOM_REPO}/Release"
+    dpkg-scanpackages --multiversion . "${ZOOM_CACHE}/override" > "${ZOOM_REPO}/Release"
   else
-    dpkg-scanpackages --multiversion "${ZOOM_REPO}" > "${ZOOM_REPO}/Release"
+    dpkg-scanpackages --multiversion . > "${ZOOM_REPO}/Release"
   fi
+  popd
   gzip -9c "${ZOOM_REPO}/Release" > "${ZOOM_REPO}/Packages.gz"
   chmod 644 "${ZOOM_REPO}"/*
   echo "DONE"
